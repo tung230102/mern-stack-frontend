@@ -1,7 +1,16 @@
-import { Table } from "antd";
+import { ExportOutlined } from "@ant-design/icons";
+import { Button, Table } from "antd";
 import { Excel } from "antd-table-saveas-excel";
 import React, { useMemo, useState } from "react";
-import Spinner from "../ui/Spinner";
+import styled from "styled-components";
+import Spinner from "./Spinner";
+
+const StyledButton = styled(Button)`
+  height: 80px;
+  width: 80px;
+  border-radius: 8px;
+  border-style: dashed;
+`;
 
 const TableForm = ({
   columns,
@@ -60,7 +69,9 @@ const TableForm = ({
         </div>
       )}
 
-      <button onClick={exportExcel}>Export Excel</button>
+      <StyledButton onClick={exportExcel}>
+        <ExportOutlined style={{ fontSize: 40 }} />
+      </StyledButton>
 
       <Table
         rowSelection={{

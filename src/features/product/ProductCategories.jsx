@@ -1,15 +1,25 @@
-import styled from "styled-components";
-import * as ProductService from "../../services/ProductService";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
+import * as ProductService from "../../services/ProductService";
 
 const StyledUl = styled.ul`
+  padding: 0 40px;
+  height: 48px;
   display: flex;
   align-items: center;
-  gap: 24px;
   justify-content: flex-start;
-  border-bottom: 1px solid red;
-  height: 48px;
+  gap: 24px;
+`;
+
+const StyledLi = styled.li`
+  padding: 8px 8px;
+  cursor: pointer;
+  &:hover {
+    background-color: var(--color-brand-600);
+    color: var(--color-grey-0);
+    border-radius: 4px;
+  }
 `;
 
 function ProductCategories() {
@@ -38,12 +48,12 @@ function ProductCategories() {
   }
 
   return (
-    <div style={{ padding: "0 120px", cursor: "pointer" }}>
+    <div>
       <StyledUl>
         {typeProducts?.map((item) => (
-          <li key={item} onClick={() => handleClick(item)}>
+          <StyledLi key={item} onClick={() => handleClick(item)}>
             {item}
-          </li>
+          </StyledLi>
         ))}
       </StyledUl>
     </div>

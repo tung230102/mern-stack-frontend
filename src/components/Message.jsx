@@ -12,4 +12,4 @@ const warning = (mes = "Warning") => {
   message.warning(mes);
 };
 
-export { success, error, warning };
+export { error, success, warning };

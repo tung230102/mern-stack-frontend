@@ -4,7 +4,6 @@ function DrawerForm({
   title = "Basic Drawer",
   placement,
   isOpen = false,
-
   children,
   ...rests
 }) {

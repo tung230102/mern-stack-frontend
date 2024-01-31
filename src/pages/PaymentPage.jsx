@@ -1,4 +1,4 @@
-import Payment from "../features/payment/Payment";
+import Payment from "../features/order/Payment";
 
 function PaymentPage() {
   return <Payment />;

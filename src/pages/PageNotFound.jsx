@@ -1,8 +1,8 @@
 import styled from "styled-components";
 
+import { Button } from "antd";
 import Title from "antd/es/typography/Title";
 import { useMoveBack } from "../hooks/useMoveBack";
-import { Button } from "antd";
 
 const StyledPageNotFound = styled.main`
   height: 100vh;

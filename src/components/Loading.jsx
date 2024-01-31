@@ -1,7 +1,7 @@
 import { LoadingOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
 
-const SpinnerButton = ({ children, isPending, delay = 200 }) => {
+const Loading = ({ children, isPending, delay = 200 }) => {
   return (
     <Spin
       spinning={isPending}
@@ -20,4 +20,4 @@ const SpinnerButton = ({ children, isPending, delay = 200 }) => {
   );
 };
 
-export default SpinnerButton;
+export default Loading;

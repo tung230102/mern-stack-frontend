@@ -3,25 +3,25 @@ import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { jwtDecode } from "jwt-decode";
+import AppLayout from "./components/AppLayout";
+import Spinner from "./components/Spinner";
+import OrderSuccess from "./features/order/OrderSuccess";
 import AdminPage from "./pages/AdminPage";
+import DetailOrderPage from "./pages/DetailOrderPage";
 import HomePage from "./pages/HomePage";
+import MyOrderPage from "./pages/MyOrderPage";
 import OrderPage from "./pages/OrderPage";
 import PageNotFound from "./pages/PageNotFound";
+import PaymentPage from "./pages/PaymentPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
-// import ProductPage from "./pages/ProductPage";
 import ProductTypePage from "./pages/ProductTypePage";
 import ProfilePage from "./pages/ProfilePage";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
-import { updateUser } from "./redux/slices/userSlice";
+import { resetUser, updateUser } from "./redux/slices/userSlice";
 import * as UserService from "./services/UserService";
 import GlobalStyles from "./styles/GlobalStyles";
-import AppLayout from "./ui/AppLayout";
 import { isJsonString } from "./utils/helper";
-import Spinner from "./ui/Spinner";
-import PaymentPage from "./pages/PaymentPage";
-import OrderSuccess from "./features/order/OrderSuccess";
-import MyOrderPage from "./pages/MyOrderPage";
 
 function App() {
   const dispatch = useDispatch();
@@ -30,8 +30,16 @@ function App() {
 
   const handleGetDetailsUser = useCallback(
     async (id, token) => {
+      let storageRefreshToken = localStorage.getItem("refresh_token");
+      const refreshToken = JSON.parse(storageRefreshToken);
       const res = await UserService.getDetailsUser(id, token);
-      dispatch(updateUser({ ...res?.data, access_token: token }));
+      dispatch(
+        updateUser({
+          ...res?.data,
+          access_token: token,
+          refreshToken: refreshToken,
+        })
+      );
     },
     [dispatch]
   );
@@ -47,10 +55,11 @@ function App() {
   }, [handleGetDetailsUser]);
 
   const handleDecoded = () => {
-    let storageData = localStorage.getItem("access_token");
+    let storageData =
+      user?.access_token || localStorage.getItem("access_token");
     let decoded = {};
 
-    if (storageData && isJsonString(storageData)) {
+    if (storageData && isJsonString(storageData) && !user?.access_token) {
       storageData = JSON.parse(storageData);
       decoded = jwtDecode(storageData);
     }
@@ -61,9 +70,16 @@ function App() {
     async (config) => {
       const currentTime = new Date().getTime() / 1000;
       const { decoded } = handleDecoded();
+      let storageRefreshToken = localStorage.getItem("refresh_token");
+      const refreshToken = JSON.parse(storageRefreshToken);
+      const decodedRefreshToken = jwtDecode(refreshToken);
       if (decoded?.exp < currentTime) {
-        const data = await UserService.refreshToken();
-        config.headers["token"] = `Bearer ${data?.access_token}`;
+        if (decodedRefreshToken?.exp > currentTime) {
+          const data = await UserService.refreshToken(refreshToken);
+          config.headers["token"] = `Bearer ${data?.access_token}`;
+        } else {
+          dispatch(resetUser());
+        }
       }
 
       return config;
@@ -86,15 +102,15 @@ function App() {
             <Route path="/order" element={<OrderPage />} />
             <Route path="/order-success" element={<OrderSuccess />} />
             <Route path="/my-order" element={<MyOrderPage />} />
+            <Route path="/details-order/:id" element={<DetailOrderPage />} />
             <Route path="/payment" element={<PaymentPage />} />
-            {/* <Route path="/products" element={<ProductPage />} /> */}
             <Route path="/product/:type" element={<ProductTypePage />} />
             <Route path="/product-detail/:id" element={<ProductDetailPage />} />
             <Route path="/profile-user" element={<ProfilePage />} />
-            {user?.isAdmin && (
-              <Route path="/system/admin" element={<AdminPage />} />
-            )}
           </Route>
+          {user?.isAdmin && (
+            <Route path="/system/admin" element={<AdminPage />} />
+          )}
 
           <Route path="/sign-in" element={<SignInPage />} />
           <Route path="/sign-up" element={<SignUpPage />} />

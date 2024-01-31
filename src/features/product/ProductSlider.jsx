@@ -1,6 +1,45 @@
-import Slider from "react-slick";
-
 import { Image } from "antd";
+import Slider from "react-slick";
+import styled from "styled-components";
+
+const WrapperSliderStyle = styled(Slider)`
+  & .slick-arrow.slick-prev {
+    left: 12px;
+    top: 50%;
+    z-index: 10;
+    &::before {
+      font-size: 40px;
+      color: var(--color-grey-0);
+    }
+  }
+  & .slick-arrow.slick-next {
+    right: 28px;
+    top: 50%;
+    z-index: 10;
+    &::before {
+      font-size: 40px;
+      color: var(--color-grey-0);
+    }
+  }
+  & .slick-dots {
+    z-index: 10;
+    bottom: -2px !important;
+    li {
+      button {
+        &::before {
+          color: var(--color-grey-0);
+        }
+      }
+    }
+    li.active {
+      button {
+        &::before {
+          color: var(--color-grey-0);
+        }
+      }
+    }
+  }
+`;
 
 function ProductSlider() {
   var settings = {
@@ -13,14 +52,11 @@ function ProductSlider() {
     autoplaySpeed: 3000,
   };
 
-  const imageSlider = ["slider1.webp", "slider2.webp", "slider3.webp"];
+  const imageSlider = ["/slider1.webp", "/slider2.webp", "/slider3.webp"];
 
   return (
-    <div
-      id="container"
-      style={{ backgroundColor: "#efefef", padding: "0 120px" }}
-    >
-      <Slider {...settings}>
+    <div style={{ padding: "0 40px" }}>
+      <WrapperSliderStyle {...settings}>
         {imageSlider.map((image) => (
           <Image
             key={image}
@@ -31,7 +67,7 @@ function ProductSlider() {
             height="280px"
           />
         ))}
-      </Slider>
+      </WrapperSliderStyle>
     </div>
   );
 }

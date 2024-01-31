@@ -1,7 +1,7 @@
-import { Button, Form } from "antd";
+import { Form } from "antd";
 import { FormItemInput } from "../../components/FormItemInput";
 
-function FormOrder({ form, state, onChange, disabled, onCancel }) {
+function FormAddress({ form, state, onChange, disabled, onCancel }) {
   return (
     <Form
       name="basic"
@@ -38,22 +38,8 @@ function FormOrder({ form, state, onChange, disabled, onCancel }) {
         onChange={onChange}
         disabled={disabled}
       />
-
-      {/* <Form.Item
-        wrapperCol={{
-          offset: 16,
-          span: 16,
-        }}
-      >
-        <Button type="primary" htmlType="submit" disabled={disabled}>
-          Submit
-        </Button>
-        <Button onClick={onCancel} disabled={disabled}>
-          Cancel
-        </Button>
-      </Form.Item> */}
     </Form>
   );
 }
 
-export default FormOrder;
+export default FormAddress;

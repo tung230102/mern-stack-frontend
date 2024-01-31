@@ -9,10 +9,11 @@ import styled from "styled-components";
 
 import ButtonFullWidth from "../../components/ButtonFullWidth";
 import { FormItemInput } from "../../components/FormItemInput";
+import ImagePreview from "../../components/ImagePreview";
+import Loading from "../../components/Loading";
 import * as Message from "../../components/Message";
 import { updateUser } from "../../redux/slices/userSlice";
 import * as UserService from "../../services/UserService";
-import SpinnerButton from "../../ui/SpinnerButton";
 import { getBase64 } from "../../utils/helper";
 
 const StyledProfile = styled.div`
@@ -154,24 +155,14 @@ function Profile() {
                 Chọn ảnh
               </ButtonFullWidth>
             </StyledUpload>
-            {avatar && (
-              <img
-                src={avatar}
-                alt="avatar"
-                style={{
-                  height: "60px",
-                  width: "60px",
-                  objectFit: "cover",
-                }}
-              />
-            )}
+            {avatar && <ImagePreview size={60} border="none" src={avatar} />}
           </StyledUploadForm>
         </Form.Item>
 
         <Form.Item>
-          <SpinnerButton isPending={isPending}>
+          <Loading isPending={isPending}>
             <ButtonFullWidth disabled={isPending}>Submit</ButtonFullWidth>
-          </SpinnerButton>
+          </Loading>
         </Form.Item>
       </Form>
     </StyledProfile>

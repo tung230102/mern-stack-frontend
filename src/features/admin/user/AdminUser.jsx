@@ -1,21 +1,21 @@
+import { useSelector } from "react-redux";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import { Button, Form, Input, Modal, Space } from "antd";
 import {
   DeleteOutlined,
   EditOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import { Button, Form, Input, Modal, Space } from "antd";
 import Title from "antd/es/typography/Title";
-
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
 
 import DrawerForm from "../../../components/DrawerForm";
 import * as Message from "../../../components/Message";
+import Spinner from "../../../components/Spinner";
 import TableForm from "../../../components/TableForm";
 import { useMutationHook } from "../../../hooks/useMutationHook";
 import * as UserService from "../../../services/UserService";
-import Spinner from "../../../ui/Spinner";
 import { getBase64 } from "../../../utils/helper";
 import AdminFormUser from "./AdminFormUser";
 
@@ -365,7 +365,6 @@ function AdminUser() {
   } = mutationDeletedMany;
 
   const handleDeleteManyUsers = (ids) => {
-    console.log(ids);
     mutationDeletedMany.mutate(
       { ids: ids, token: user?.access_token },
       {

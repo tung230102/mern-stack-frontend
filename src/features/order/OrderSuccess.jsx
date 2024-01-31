@@ -1,109 +1,100 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
-import {
-  Label,
-  StyledContainer,
-  StyledInfo,
-  StyledItemOrder,
-  StyledItemOrderInfo,
-  StyledValue,
-} from "./style";
+import { useLocation, useNavigate } from "react-router-dom";
+
+import { Col, Row } from "antd";
+import Text from "antd/es/typography/Text";
+import styled from "styled-components";
+import ImagePreview from "../../components/ImagePreview";
 import { orderConstant } from "../../utils/constants";
 import { convertPrice } from "../../utils/helper";
 
+const StyledOrderProduct = styled.div`
+  width: 100%;
+  height: 100%;
+  padding: 12px 40px;
+  background-color: var(--color-grey-100);
+`;
+
+const StyledSpan = styled(Text)`
+  font-weight: 700;
+  font-size: 1.6rem;
+  cursor: pointer;
+  &:hover {
+    color: var(--color-brand-600);
+  }
+`;
+
+const StyledInfo = styled.div`
+  background-color: var(--color-grey-0);
+  border-bottom: 1px solid var(--color-grey-100);
+  padding: 12px 16px;
+  border-top-right-radius: 4px;
+  border-top-left-radius: 4px;
+`;
+
+const StyledValue = styled.div`
+  background: rgb(240, 248, 255);
+  border: 1px solid rgb(194, 225, 255);
+  padding: 8px;
+  width: fit-content;
+  border-radius: 4px;
+  margin-top: 4px;
+`;
+
 const OrderSuccess = () => {
   const { state } = useLocation();
+  const navigate = useNavigate();
 
   return (
-    <div style={{ background: "#f5f5fa", with: "100%", height: "100vh" }}>
-      <div style={{ height: "100%", width: "1270px", margin: "0 auto" }}>
-        <h3>Đơn hàng đặt thành công</h3>
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <StyledContainer>
-            <StyledInfo>
-              <div>
-                <Label>Phương thức giao hàng</Label>
-                <StyledValue>
-                  <span style={{ color: "#ea8500", fontWeight: "bold" }}>
-                    {orderConstant.delivery[state?.delivery]}
-                  </span>{" "}
-                  Giao hàng tiết kiệm
-                </StyledValue>
-              </div>
-            </StyledInfo>
-            <StyledInfo>
-              <div>
-                <Label>Phương thức thanh toán</Label>
+    <StyledOrderProduct>
+      <StyledSpan onClick={() => navigate("/")}>Trang chủ</StyledSpan>
+      <Text> - Đơn hàng đặt thành công</Text>
 
-                <StyledValue>
-                  {orderConstant.payment[state?.payment]}
-                </StyledValue>
-              </div>
-            </StyledInfo>
-            <StyledItemOrderInfo>
-              {state?.orders?.map((order) => {
-                return (
-                  <StyledItemOrder key={order?.name}>
-                    <div
-                      style={{
-                        width: "500px",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 4,
-                      }}
-                    >
-                      <img
-                        alt="order_image"
-                        src={order.image}
-                        style={{
-                          width: "77px",
-                          height: "79px",
-                          objectFit: "cover",
-                        }}
-                      />
-                      <div
-                        style={{
-                          width: 260,
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {order?.name}
-                      </div>
-                    </div>
-                    <div
-                      style={{
-                        flex: 1,
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                      }}
-                    >
-                      <span>
-                        <span style={{ fontSize: "13px", color: "#242424" }}>
-                          Giá tiền: {convertPrice(order?.price)}
-                        </span>
-                      </span>
-                      <span>
-                        <span style={{ fontSize: "13px", color: "#242424" }}>
-                          Số lượng: {order?.amount}
-                        </span>
-                      </span>
-                    </div>
-                  </StyledItemOrder>
-                );
-              })}
-            </StyledItemOrderInfo>
-            <div>
-              <span style={{ fontSize: "16px", color: "red" }}>
-                Tổng tiền: {convertPrice(state?.totalPriceMemo)}
-              </span>
-            </div>
-          </StyledContainer>
-        </div>
-      </div>
-    </div>
+      <Row>
+        <Col span={24}>
+          <StyledInfo>
+            <Text strong>Phương thức giao hàng</Text>
+            <StyledValue>
+              <Text style={{ color: "#ea8500", fontWeight: "bold" }}>
+                {orderConstant.delivery[state?.delivery]}
+              </Text>{" "}
+              Giao hàng tiết kiệm
+            </StyledValue>
+          </StyledInfo>
+          <StyledInfo>
+            <Text strong>Phương thức thanh toán</Text>
+            <StyledValue>{orderConstant.payment[state?.payment]}</StyledValue>
+          </StyledInfo>
+
+          <StyledInfo>
+            {state?.orders?.map((order) => {
+              return (
+                <Row align="middle" key={order?.name}>
+                  <Col span={10}>
+                    <ImagePreview src={order.image} /> {order?.name}
+                  </Col>
+                  <Col span={4}>
+                    <Text style={{ fontSize: "13px", color: "#242424" }}>
+                      Đơn giá: {convertPrice(order?.price)}
+                    </Text>
+                  </Col>
+                  <Col span={4}>
+                    <Text style={{ fontSize: "13px", color: "#242424" }}>
+                      Số lượng: {order?.amount}
+                    </Text>
+                  </Col>
+                  <Col span={6}>
+                    <Text style={{ fontSize: "16px", color: "red" }}>
+                      Tổng tiền: {convertPrice(state?.totalPriceMemo)}
+                    </Text>
+                  </Col>
+                </Row>
+              );
+            })}
+          </StyledInfo>
+        </Col>
+      </Row>
+    </StyledOrderProduct>
   );
 };
 

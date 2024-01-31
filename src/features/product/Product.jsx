@@ -1,27 +1,27 @@
-import styled from "styled-components";
-import Spinner from "../../ui/Spinner";
-import ProductItemCard from "./ProductItemCard";
-import ProductMore from "./ProductMore";
-import { useProduct } from "./useProduct";
-import { useSelector } from "react-redux";
-import { useEffect, useRef, useState } from "react";
-import * as ProductService from "../../services/ProductService";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import styled from "styled-components";
+
+import ButtonMore from "../../components/ButtonMore";
+import Spinner from "../../components/Spinner";
 import { useDebounce } from "../../hooks/useDebounce";
+import * as ProductService from "../../services/ProductService";
+import { limitProduct } from "../../utils/constants";
+import ProductItemCard from "./ProductItemCard";
 
 const StyledProducts = styled.div`
-  display: flex;
-  gap: 24px;
+  padding: 0 40px;
   margin-top: 20px;
+  display: flex;
   flex-wrap: wrap;
+  gap: 12px;
 `;
 
 function Product() {
   const searchProduct = useSelector((state) => state.product.search);
   const searchDebounce = useDebounce(searchProduct, 1000);
-  const [limit, setLimit] = useState(5);
-
-  // const { isLoading, products } = useProduct();
+  const [limit, setLimit] = useState(limitProduct);
 
   const fetchProductAll = async (context) => {
     const limit = context?.queryKey && context?.queryKey[1];
@@ -53,26 +53,13 @@ function Product() {
 
   return (
     <>
-      <StyledProducts
-      // style={{
-      //   // padding: "0 120px",
-      //   // alignItems: "center",
-      //   display: "flex",
-      //   marginTop: "20px",
-      //   gap: "14px",
-      //   flexWrap: "wrap",
-      // }}
-      >
+      <StyledProducts>
         {products.data?.map((product) => (
           <ProductItemCard key={product._id} product={product} />
         ))}
       </StyledProducts>
-
       {disableButtonMore || (
-        <ProductMore
-          onClick={handleLoadMore}
-          isPlaceholderData={isPlaceholderData}
-        />
+        <ButtonMore onClick={handleLoadMore} isPending={isPlaceholderData} />
       )}
     </>
   );

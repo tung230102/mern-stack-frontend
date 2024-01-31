@@ -8,3 +8,5 @@ export const orderConstant = {
     paypal: "Thanh toán bằng paypal",
   },
 };
+
+export const limitProduct = 6;

@@ -1,4 +1,4 @@
-import { Button, Form, Input } from "antd";
+import { Button, Form } from "antd";
 import { FormItemInput } from "../../../components/FormItemInput";
 
 function AdminFormProduct({

@@ -1,22 +1,16 @@
-import { DeleteOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Form, Input, Modal } from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
+import { Checkbox, Col, Form, Modal, Row, Typography } from "antd";
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  StyledCountOrder,
-  StyledHeaderDelivery,
-  StyledInfo,
-  StyledItemOrder,
-  StyledLeft,
-  StyledListOrder,
-  StyledRight,
-  StyledStyleHeader,
-  StyledTotal,
-} from "./style";
 
-import { useMutation } from "@tanstack/react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
+import ButtonDefault from "../../components/ButtonDefault";
+import FormNumber from "../../components/FormNumber";
+import ImagePreview from "../../components/ImagePreview";
 import * as Message from "../../components/Message";
+import StepOrder from "../../components/StepOrder";
+import { useMutationHook } from "../../hooks/useMutationHook";
 import {
   decreaseAmount,
   increaseAmount,
@@ -27,9 +21,8 @@ import {
 import { updateUser } from "../../redux/slices/userSlice";
 import * as UserService from "../../services/UserService";
 import { convertPrice } from "../../utils/helper";
-import FormOrder from "./FormOrder";
-import { useMutationHook } from "../../hooks/useMutationHook";
-import StepOrder from "../../components/StepOrder";
+import FormAddress from "./FormAddress";
+const { Title, Text } = Typography;
 
 const initialValue = () => ({
   name: "",
@@ -37,6 +30,35 @@ const initialValue = () => ({
   address: "",
   city: "",
 });
+
+const StyledOrderProduct = styled.div`
+  width: 100%;
+  height: 100%;
+  padding: 12px 40px;
+  background-color: var(--color-grey-100);
+`;
+
+const StyledSpan = styled(Text)`
+  font-weight: 700;
+  font-size: 1.6rem;
+  cursor: pointer;
+  &:hover {
+    color: var(--color-brand-600);
+  }
+`;
+
+const StyledInfo = styled.div`
+  background-color: var(--color-grey-0);
+  border-bottom: 1px solid var(--color-grey-100);
+  padding: 12px 16px;
+  border-top-right-radius: 4px;
+  border-top-left-radius: 4px;
+
+  &.margin-right {
+    margin-right: 8px;
+    margin-bottom: 8px;
+  }
+`;
 
 const OrderProduct = () => {
   const order = useSelector((state) => state.order);
@@ -73,11 +95,15 @@ const OrderProduct = () => {
     }
   };
 
-  const handleChangeCount = (type, idProduct) => {
+  const handleChangeCount = (type, idProduct, limited) => {
     if (type === "increase") {
-      dispatch(increaseAmount({ idProduct }));
+      if (!limited) {
+        dispatch(increaseAmount({ idProduct }));
+      }
     } else {
-      dispatch(decreaseAmount({ idProduct }));
+      if (!limited) {
+        dispatch(decreaseAmount({ idProduct }));
+      }
     }
   };
 
@@ -116,20 +142,15 @@ const OrderProduct = () => {
   }, [order, priceMemo]);
 
   const deliveryPriceMemo = useMemo(() => {
-    // if (priceMemo < 20000) {
-    //   return 20000;
-    // } else if (priceMemo >= 20000 && priceMemo < 500000) {
-    //   return 30000;
-    // } else if (priceMemo >= 500000 || order?.orderItemsSelected?.length === 0) {
-    //   return 30000;
-    // }
-    if (priceMemo >= 20000 && priceMemo < 500000) {
-      return 10000;
-    } else if (priceMemo >= 500000 || order?.orderItemsSelected?.length === 0) {
-      return 0;
-    } else {
+    if (order?.orderItemsSelected?.length === 0) return 0;
+
+    if (priceMemo < 200000) {
       return 20000;
+    } else if (priceMemo < 500000) {
+      return 30000;
     }
+
+    return 0;
   }, [priceMemo, order]);
 
   const totalPriceMemo = useMemo(() => {
@@ -212,258 +233,137 @@ const OrderProduct = () => {
   // End handle address
 
   return (
-    <div style={{ background: "#f5f5fa", with: "100%", height: "100vh" }}>
-      <div style={{ height: "100%", width: "1270px", margin: "0 auto" }}>
-        <h3>Giỏ hàng</h3>
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <StyledLeft>
-            <h4>Phí giao hàng</h4>
-            <StyledHeaderDelivery>
-              <StepOrder
-                deliveryPriceMemo={deliveryPriceMemo}
-                length={order?.orderItemsSelected?.length}
-              />
-            </StyledHeaderDelivery>
-            <StyledStyleHeader>
-              <span style={{ display: "inline-block", width: "390px" }}>
+    <StyledOrderProduct>
+      <StyledSpan onClick={() => navigate("/")}>Trang chủ</StyledSpan>
+      <Text> - Giỏ hàng</Text>
+      <Row>
+        <Col span={18}>
+          <StyledInfo className="margin-right">
+            <StepOrder
+              deliveryPriceMemo={deliveryPriceMemo}
+              length={order?.orderItemsSelected?.length}
+            />
+          </StyledInfo>
+          <StyledInfo className="margin-right">
+            <Row>
+              <Col span={11}>
                 <Checkbox
                   onChange={handleCheckAll}
                   checked={listChecked?.length === order?.orderItems?.length}
-                ></Checkbox>
-                <span> Tất cả ({order?.orderItems?.length} sản phẩm)</span>
-              </span>
-              <div
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <span>Đơn giá</span>
-                <span>Số lượng</span>
-                <span>Thành tiền</span>
-                <DeleteOutlined
-                  style={{ cursor: "pointer" }}
-                  onClick={handleRemoveAllOrder}
-                />
-              </div>
-            </StyledStyleHeader>
-            <StyledListOrder>
-              {order?.orderItems?.map((order) => {
-                return (
-                  <StyledItemOrder key={order.name}>
-                    <div
-                      style={{
-                        width: "390px",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 4,
-                      }}
-                    >
-                      <Checkbox
-                        onChange={handleCheck}
-                        value={order?.product}
-                        checked={listChecked.includes(order?.product)}
-                      ></Checkbox>
-                      <img
-                        alt="order"
-                        src={order?.image}
-                        style={{
-                          width: "77px",
-                          height: "79px",
-                          objectFit: "cover",
-                        }}
-                      />
-                      <div
-                        style={{
-                          width: 260,
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {order?.name}
-                      </div>
-                    </div>
-                    <div
-                      style={{
-                        flex: 1,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <span>
-                        <span style={{ fontSize: "13px", color: "#242424" }}>
-                          {convertPrice(order?.price)}
-                        </span>
-                      </span>
-                      <StyledCountOrder>
-                        <button
-                          style={{
-                            border: "none",
-                            background: "transparent",
-                            cursor: "pointer",
-                          }}
-                          onClick={() =>
-                            handleChangeCount("decrease", order?.product)
-                          }
-                        >
-                          <MinusOutlined
-                            style={{ color: "#000", fontSize: "10px" }}
-                          />
-                        </button>
-                        <Input
-                          defaultValue={order?.amount}
-                          value={order?.amount}
-                          size="small"
-                        />
-                        <button
-                          style={{
-                            border: "none",
-                            background: "transparent",
-                            cursor: "pointer",
-                          }}
-                          onClick={() =>
-                            handleChangeCount("increase", order?.product)
-                          }
-                        >
-                          <PlusOutlined
-                            style={{ color: "#000", fontSize: "10px" }}
-                          />
-                        </button>
-                      </StyledCountOrder>
-                      <span
-                        style={{
-                          color: "rgb(255, 66, 78)",
-                          fontSize: "13px",
-                          fontWeight: 500,
-                        }}
-                      >
-                        {convertPrice(order?.price * order?.amount)}
-                      </span>
-                      <DeleteOutlined
-                        style={{ cursor: "pointer" }}
-                        onClick={() => handleDeleteOrder(order?.product)}
-                      />
-                    </div>
-                  </StyledItemOrder>
-                );
-              })}
-            </StyledListOrder>
-          </StyledLeft>
-          <StyledRight>
-            <div style={{ width: "100%" }}>
-              <StyledInfo>
-                <div>
-                  <span>Địa chỉ: </span>
-                  <span style={{ fontWeight: "bold" }}>
-                    {`${user?.address}, ${user?.city} `}
-                  </span>
-                  <span
-                    onClick={handleChangeAddress}
-                    style={{ color: "#9255FD", cursor: "pointer" }}
-                  >
-                    Thay đổi
-                  </span>
-                </div>
-              </StyledInfo>
-              <StyledInfo>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <span>Tạm tính</span>
-                  <span
-                    style={{
-                      color: "#000",
-                      fontSize: "14px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {convertPrice(priceMemo)}
-                  </span>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <span>Giảm giá</span>
-                  <span
-                    style={{
-                      color: "#000",
-                      fontSize: "14px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {convertPrice(priceDiscountMemo)}
-                  </span>
-                </div>
+                ></Checkbox>{" "}
+                Tất cả ({order?.orderItems?.length} sản phẩm)
+              </Col>
+              <Col span={4}>Đơn giá</Col>
+              <Col span={4}>Số lượng</Col>
+              <Col span={4}>Thành tiền</Col>
+              <Col span={1}>
+                <DeleteOutlined onClick={handleRemoveAllOrder} />
+              </Col>
+            </Row>
+          </StyledInfo>
 
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <span>Phí giao hàng</span>
-                  <span
-                    style={{
-                      color: "#000",
-                      fontSize: "14px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {convertPrice(deliveryPriceMemo)}
-                  </span>
-                </div>
+          {order?.orderItems?.map((order) => {
+            return (
+              <StyledInfo className="margin-right" key={order.name}>
+                <Row>
+                  <Col span={11}>
+                    <Checkbox
+                      onChange={handleCheck}
+                      value={order?.product}
+                      checked={listChecked.includes(order?.product)}
+                    ></Checkbox>
+                    <ImagePreview src={order?.image} /> {order?.name}
+                  </Col>
+                  <Col span={4}> {convertPrice(order?.price)}</Col>
+                  <Col span={4}>
+                    <FormNumber
+                      onClickDecrease={() =>
+                        handleChangeCount(
+                          "decrease",
+                          order?.product,
+                          order?.amount === 1
+                        )
+                      }
+                      onClickIncrease={() =>
+                        handleChangeCount(
+                          "increase",
+                          order?.product,
+                          order?.amount === order.countInStock,
+                          order?.amount === 1
+                        )
+                      }
+                      defaultValue={order?.amount}
+                      value={order?.amount}
+                      max={order?.countInStock}
+                      width={"40%"}
+                    />
+                  </Col>
+                  <Col span={4}>
+                    <Title level={5} type="danger">
+                      {convertPrice(order?.price * order?.amount)}
+                    </Title>
+                  </Col>
+                  <Col span={1}>
+                    <DeleteOutlined
+                      onClick={() => handleDeleteOrder(order?.product)}
+                    />
+                  </Col>
+                </Row>
               </StyledInfo>
-              <StyledTotal>
-                <span>Tổng tiền</span>
-                <span style={{ display: "flex", flexDirection: "column" }}>
-                  <span
-                    style={{
-                      color: "rgb(254, 56, 52)",
-                      fontSize: "24px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {convertPrice(totalPriceMemo)}
-                  </span>
-                  <span style={{ color: "#000", fontSize: "11px" }}>
-                    (Đã bao gồm VAT nếu có)
-                  </span>
-                </span>
-              </StyledTotal>
-            </div>
-            <Button
-              // onClick={() => handleAddCard(productDetails, numProduct)}
-              size={40}
-              style={{
-                background: "rgb(255, 57, 69)",
-                height: "48px",
-                width: "320px",
-                border: "none",
-                borderRadius: "4px",
-                color: "#fff",
-                fontSize: "15px",
-                fontWeight: "700",
-              }}
-              onClick={handleAddCard}
-            >
-              Mua hàng
-            </Button>
-          </StyledRight>
-        </div>
-      </div>
+            );
+          })}
+        </Col>
+
+        <Col span={6}>
+          <StyledInfo>
+            <Text strong>Địa chỉ: </Text>
+            <Text underline>{`${user?.address}, ${user?.city} `}</Text>
+            <StyledSpan onClick={handleChangeAddress}>Thay đổi</StyledSpan>
+          </StyledInfo>
+          <StyledInfo>
+            <Row>
+              <Col span={8}>
+                <Text strong>Tạm tính: </Text>
+              </Col>
+              <Col span={10} offset={6}>
+                <Text>{convertPrice(priceMemo)}</Text>
+              </Col>
+            </Row>
+            <Row>
+              <Col span={8}>
+                <Text strong>Giảm giá: </Text>
+              </Col>
+              <Col span={10} offset={6}>
+                <Text>{convertPrice(priceDiscountMemo)}</Text>
+              </Col>
+            </Row>
+            <Row>
+              <Col span={8}>
+                <Text strong>Phí giao hàng:</Text>
+              </Col>
+              <Col span={10} offset={6}>
+                <Text>{convertPrice(deliveryPriceMemo)}</Text>
+              </Col>
+            </Row>
+          </StyledInfo>
+          <StyledInfo>
+            <Row>
+              <Col span={8}>
+                <Text strong>Tổng tiền</Text>
+              </Col>
+              <Col span={10} offset={6}>
+                <Text type="danger">{convertPrice(totalPriceMemo)}</Text>
+              </Col>
+            </Row>
+          </StyledInfo>
+
+          <ButtonDefault
+            text="Mua hàng"
+            onClick={handleAddCard}
+            marginTop={8}
+          />
+        </Col>
+      </Row>
 
       {/* Modal */}
       <Modal
@@ -472,16 +372,14 @@ const OrderProduct = () => {
         onCancel={handleCancelUpdate}
         onOk={handleUpdateInfoUser}
       >
-        <FormOrder
+        <FormAddress
           form={form}
           state={stateUserDetails}
           onChange={handleChangeDetails}
           disabled={isPending}
-          // onUpLoad={handleUploadDetails}
-          // onCancel={() => setIsOpenDrawer(false)}
         />
       </Modal>
-    </div>
+    </StyledOrderProduct>
   );
 };
 

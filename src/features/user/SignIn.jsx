@@ -7,10 +7,10 @@ import { useDispatch } from "react-redux";
 import { FormItemInput } from "../../components/FormItemInput";
 import * as Message from "../../components/Message";
 
+import { UserFormLogin } from "../../components/UserFormLogin";
 import { useMutationHook } from "../../hooks/useMutationHook";
 import { updateUser } from "../../redux/slices/userSlice";
 import * as UserService from "../../services/UserService";
-import { UserFormLogin } from "../../components/UserFormLogin";
 
 function SignIn() {
   const dispatch = useDispatch();
@@ -24,8 +24,11 @@ function SignIn() {
 
   const handleGetDetailsUser = useCallback(
     async (id, token) => {
+      const storage = localStorage.getItem("refresh_token");
+      const refreshToken = JSON.parse(storage);
+
       const res = await UserService.getDetailsUser(id, token);
-      dispatch(updateUser({ ...res?.data, access_token: token }));
+      dispatch(updateUser({ ...res?.data, access_token: token, refreshToken }));
     },
     [dispatch]
   );
@@ -37,8 +40,12 @@ function SignIn() {
       } else {
         navigate("/");
       }
-      Message.success();
+      Message.success("Đăng nhập thành công");
       localStorage.setItem("access_token", JSON.stringify(data?.access_token));
+      localStorage.setItem(
+        "refresh_token",
+        JSON.stringify(data?.refresh_token)
+      );
       if (data?.access_token) {
         const decoded = jwtDecode(data?.access_token);
         if (decoded?.id) {
@@ -46,9 +53,9 @@ function SignIn() {
         }
       }
     } else if (isSuccess && data?.status === "ERR") {
-      Message.error();
+      Message.error("Đăng nhập không thành công");
     }
-  }, [isSuccess, navigate, data, handleGetDetailsUser]);
+  }, [isSuccess, navigate, data, handleGetDetailsUser, location]);
 
   const handleFinish = () => {
     mutation.mutate({
@@ -73,6 +80,7 @@ function SignIn() {
         prefix={<UserOutlined />}
         onChange={(e) => setEmail(e.target.value)}
         disabled={isPending}
+        placeholder="Nhập email của bạn"
       />
       <FormItemInput
         name="password"
@@ -81,9 +89,10 @@ function SignIn() {
         prefix={<LockOutlined />}
         onChange={(e) => setPassword(e.target.value)}
         disabled={isPending}
+        placeholder="Nhập mật khẩu của bạn"
       />
-      <p>test@gmail.com</p>
-      <p>password</p>
+      <p>admin@gmail.com</p>
+      <p>admin</p>
     </UserFormLogin>
   );
 }

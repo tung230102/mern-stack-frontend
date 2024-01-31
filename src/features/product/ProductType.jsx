@@ -1,21 +1,34 @@
 import { Col, Pagination, Row } from "antd";
-import Product from "./Product";
-import NavBar from "../../ui/NavBar";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+
+import NavBarType from "../../components/NavBarType";
 import * as ProductService from "../../services/ProductService";
-import { useCallback, useEffect, useState } from "react";
 import ProductItemCard from "./ProductItemCard";
 
-import Spinner from "../../ui/Spinner";
 import { useSelector } from "react-redux";
-import { useDebounce } from "../../hooks/useDebounce";
 import styled from "styled-components";
+import Spinner from "../../components/Spinner";
+import { useDebounce } from "../../hooks/useDebounce";
+
+const StyledRow = styled(Row)`
+  padding: 0 40px;
+  flex-wrap: nowrap;
+  padding: 20px;
+  height: 100%;
+  background-color: var(--color-grey-100);
+`;
+
+const StyledCol = styled(Col)`
+  background-color: var(--color-grey-0);
+  padding: 8px;
+  border-radius: 8px;
+`;
 
 const StyledContent = styled.div`
   display: flex;
-  gap: 12px;
-  margin-top: 20px;
   flex-wrap: wrap;
+  gap: 8px;
 `;
 
 function ProductType() {
@@ -31,18 +44,6 @@ function ProductType() {
     total: 1,
   });
 
-  // const fetchProductType = async (type, page, limit) => {
-  //   setLoading(true);
-  //   const res = await ProductService.getProductType(type, page, limit);
-  //   if (res?.status === "OK") {
-  //     setLoading(false);
-  //     setProducts(res?.data);
-  //     setPaginate({ ...paginate, total: res?.totalPage });
-  //   } else {
-  //     setLoading(false);
-  //   }
-  // };
-
   const fetchProductType = async (type, page, limit) => {
     setLoading(true);
     try {
@@ -55,7 +56,6 @@ function ProductType() {
         setLoading(false);
       }
     } catch (error) {
-      console.error("Error fetching products:", error);
       setLoading(false);
     }
   };
@@ -67,7 +67,7 @@ function ProductType() {
   }, [state, paginate.page, paginate.limit]);
 
   function handlePagination(current, pageSize) {
-    setPaginate({ ...paginate, page: current - 1, limit: pageSize });
+    setPaginate({ page: current - 1, limit: pageSize, total: paginate.total });
   }
 
   const productFilter = products?.filter((product) => {
@@ -81,34 +81,12 @@ function ProductType() {
   });
 
   return (
-    <Row
-      style={{
-        padding: "0 120px",
-        backgroundColor: "#efefef",
-        flexWrap: "nowrap",
-        paddingTop: "20px",
-        height: "calc(100% - 20px)",
-      }}
-    >
-      <Col
-        span={4}
-        style={{
-          backgroundColor: "#fff",
-          marginRight: "10px",
-          padding: "10px",
-          borderRadius: "6px",
-        }}
-      >
-        <NavBar />
-      </Col>
-      <Col
-        span={20}
-        style={{
-          backgroundColor: "#fff",
-          padding: "10px",
-          borderRadius: "6px",
-        }}
-      >
+    <StyledRow>
+      <StyledCol span={4} style={{ marginRight: 12 }}>
+        <NavBarType />
+      </StyledCol>
+
+      <StyledCol span={20}>
         <StyledContent>
           {loading ? (
             <Spinner />
@@ -121,12 +99,12 @@ function ProductType() {
 
         <Pagination
           defaultCurrent={paginate.page + 1}
-          total={paginate?.total}
+          total={(paginate.total - 1) * paginate.limit}
           onChange={handlePagination}
-          style={{ textAlign: "center", marginTop: "10px" }}
+          style={{ textAlign: "center", marginTop: 12 }}
         />
-      </Col>
-    </Row>
+      </StyledCol>
+    </StyledRow>
   );
 }
 

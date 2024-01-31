@@ -1,23 +1,23 @@
+import { useQuery } from "@tanstack/react-query";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
+
+import styled from "styled-components";
 import {
   DeleteOutlined,
   EditOutlined,
   PlusOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import { useQuery } from "@tanstack/react-query";
 import { Button, Form, Input, Modal, Space } from "antd";
 import Title from "antd/es/typography/Title";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import styled from "styled-components";
-
 import DrawerForm from "../../../components/DrawerForm";
 import * as Message from "../../../components/Message";
+import Spinner from "../../../components/Spinner";
 import TableForm from "../../../components/TableForm";
 import { useMutationHook } from "../../../hooks/useMutationHook";
 import * as ProductService from "../../../services/ProductService";
-import Spinner from "../../../ui/Spinner";
 import {
   convertCurrencyStringToNumber,
   convertPrice,
@@ -31,6 +31,7 @@ const StyledButton = styled(Button)`
   width: 80px;
   border-radius: 8px;
   border-style: dashed;
+  margin-right: 900px;
 `;
 
 const initialValue = () => ({
@@ -492,7 +493,6 @@ function AdminProduct() {
   } = mutationDeletedMany;
 
   const handleDeleteManyProducts = (ids) => {
-    console.log(ids);
     mutationDeletedMany.mutate(
       { ids: ids, token: user?.access_token },
       {

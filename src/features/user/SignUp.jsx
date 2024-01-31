@@ -19,10 +19,10 @@ function SignUp() {
 
   useEffect(() => {
     if (isSuccess && data?.status === "OK") {
-      Message.success();
+      Message.success("Đăng ký tài khoản thành công");
       navigate("/sign-in");
     } else if (isSuccess && data?.status === "ERR") {
-      Message.error();
+      Message.error("Đăng ký tài khoản không thành công");
     }
   }, [isSuccess, navigate, data]);
 
@@ -50,6 +50,7 @@ function SignUp() {
         prefix={<UserOutlined />}
         onChange={(e) => setEmail(e.target.value)}
         disabled={isPending}
+        placeholder="Nhập email của bạn"
       />
       <FormItemInput
         name="password"
@@ -58,14 +59,16 @@ function SignUp() {
         prefix={<LockOutlined />}
         onChange={(e) => setPassword(e.target.value)}
         disabled={isPending}
+        placeholder="Nhập mật khẩu của bạn"
       />
       <FormItemInput
-        name="confirm password"
-        value="confirm password"
+        name="lại password"
+        value="lại password"
         type="password"
         prefix={<LockOutlined />}
         onChange={(e) => setConfirmPassword(e.target.value)}
         disabled={isPending}
+        placeholder="Nhập lại mật khẩu của bạn"
       />
     </UserFormLogin>
   );

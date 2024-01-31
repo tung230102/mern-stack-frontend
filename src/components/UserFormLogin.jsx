@@ -4,8 +4,8 @@ import Title from "antd/es/typography/Title";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
-import SpinnerButton from "../ui/SpinnerButton";
 import ButtonFullWidth from "./ButtonFullWidth";
+import Loading from "./Loading";
 
 const StyledApp = styled.div`
   border: 1px solid #ccc;
@@ -43,13 +43,12 @@ export function UserFormLogin({
           <Title level={2}>{text}</Title>
         </Form.Item>
 
-        {/* input */}
         {children}
 
         <Form.Item>
-          <SpinnerButton isPending={isPending}>
+          <Loading isPending={isPending}>
             <ButtonFullWidth>{text}</ButtonFullWidth>
-          </SpinnerButton>
+          </Loading>
           {data?.status === "ERR" && (
             <span style={{ color: "red" }}>{data?.message}</span>
           )}
