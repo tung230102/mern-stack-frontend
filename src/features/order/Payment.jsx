@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import Text from "antd/es/typography/Text";
-import { PayPalButton } from "react-paypal-button-v2";
 import styled from "styled-components";
 import ButtonDefault from "../../components/ButtonDefault";
 import * as Message from "../../components/Message";
@@ -18,6 +17,7 @@ import * as PaymentService from "../../services/PaymentService";
 import * as UserService from "../../services/UserService";
 import { convertPrice } from "../../utils/helper";
 import FormAddress from "./FormAddress";
+import Paypal from "./Paypal";
 
 const initialValue = () => ({
   name: "",
@@ -382,12 +382,9 @@ const Payment = () => {
           </StyledInfo>
           {payment === "paypal" && sdkReady ? (
             <div style={{ width: "320px" }}>
-              <PayPalButton
-                amount={Math.round(totalPriceMemo / 30000)}
+              <Paypal
+                amount={Math.round(totalPriceMemo / 24590)}
                 onSuccess={onSuccessPaypal}
-                onError={() => {
-                  alert("Error");
-                }}
               />
             </div>
           ) : (
