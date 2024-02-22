@@ -1,5 +1,5 @@
-import { Footer } from "antd/es/layout/layout";
 import { Outlet } from "react-router-dom";
+import FooterLayout from "./FooterLayout";
 import Header from "./Header";
 
 function AppLayout() {
@@ -8,13 +8,7 @@ function AppLayout() {
       <Header />
       <Outlet />
 
-      <Footer
-        style={{
-          textAlign: "center",
-        }}
-      >
-        Mern Stack {new Date().getFullYear()}
-      </Footer>
+      <FooterLayout />
     </div>
   );
 }

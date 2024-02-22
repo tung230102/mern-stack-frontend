@@ -33,10 +33,10 @@ function SearchProduct() {
     <div style={{ display: "flex" }}>
       <Search
         onChange={handleSearchProduct}
-        placeholder="Nhập tìm kiếm"
+        placeholder="Enter search"
         allowClear
         enterButton={
-          <StyledButton icon={<SearchOutlined />}>Tìm kiếm</StyledButton>
+          <StyledButton icon={<SearchOutlined />}>Search</StyledButton>
         }
         size="large"
         onSearch={onSearch}

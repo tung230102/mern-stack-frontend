@@ -25,6 +25,9 @@ import {
   renderOptions,
 } from "../../../utils/helper";
 import AdminFormProduct from "./AdminFormProduct";
+import Loading from "../../../components/Loading";
+import useProduct from "../useProduct";
+import useProductType from "../useProductType";
 
 const StyledButton = styled(Button)`
   height: 80px;
@@ -89,16 +92,7 @@ function AdminProduct() {
   const { data, isPending, isSuccess } = mutation;
 
   //  Add product
-  async function getAllProducts() {
-    const res = await ProductService.getAllProduct();
-    return res;
-  }
-
-  const queryProduct = useQuery({
-    queryKey: ["products"],
-    queryFn: getAllProducts,
-  });
-
+  const queryProduct = useProduct();
   const { isLoading, data: products } = queryProduct;
 
   const handleCancel = useCallback(() => {
@@ -116,7 +110,7 @@ function AdminProduct() {
     }
   }, [isSuccess, data, handleCancel]);
 
-  const onFinish = () => {
+  function handleFinish() {
     const params = {
       name: stateProduct.name,
       price: stateProduct.price,
@@ -135,7 +129,7 @@ function AdminProduct() {
         queryProduct.refetch();
       },
     });
-  };
+  }
 
   function handleChange(e) {
     setStateProduct({
@@ -146,13 +140,15 @@ function AdminProduct() {
 
   async function handleUpload({ fileList }) {
     const file = fileList[0];
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
+    if (file) {
+      if (!file.url && !file.preview) {
+        file.preview = await getBase64(file.originFileObj);
+      }
+      setStateProduct({
+        ...stateProduct,
+        image: file.preview,
+      });
     }
-    setStateProduct({
-      ...stateProduct,
-      image: file.preview,
-    });
   }
   // End add product
 
@@ -414,12 +410,12 @@ function AdminProduct() {
     isSuccess: isSuccessUpdated,
   } = mutationUpdate;
 
-  function onUpdateProduct() {
+  function handleUpdateProduct(value) {
     mutationUpdate.mutate(
       {
         id: rowSelected,
         token: user?.access_token,
-        ...stateProductDetails,
+        ...value,
       },
       {
         onSettled: () => {
@@ -513,15 +509,8 @@ function AdminProduct() {
   // End delete many
 
   // Type products
-  const fetchAllTypeProduct = async () => {
-    const res = await ProductService.getAllTypeProduct();
-    return res;
-  };
 
-  const typeProduct = useQuery({
-    queryKey: ["type-product"],
-    queryFn: fetchAllTypeProduct,
-  });
+  const typeProduct = useProductType();
 
   const handleChangeSelect = (value) => {
     setStateProduct({
@@ -545,7 +534,7 @@ function AdminProduct() {
         onCancel={handleCancel}
       >
         <AdminFormProduct
-          onFinish={onFinish}
+          onFinish={handleFinish}
           form={form}
           state={stateProduct}
           onChange={handleChange}
@@ -581,11 +570,11 @@ function AdminProduct() {
         onClose={() => setIsOpenDrawer(false)}
       >
         <AdminFormProduct
-          onFinish={onUpdateProduct}
+          onFinish={handleUpdateProduct}
           form={form}
           state={stateProductDetails}
-          onChange={handleChange}
-          onUpload={handleUpload}
+          onChange={handleChangeDetails}
+          onUpload={handleUploadDetails}
           onSelected={handleChangeSelect}
           options={renderOptions(typeProduct?.data?.data)}
           disabled={isLoadingUpdate || isLoadingUpdated}
@@ -593,16 +582,14 @@ function AdminProduct() {
         />
       </DrawerForm>
       <Modal
-        title="Xóa sản phẩm"
+        title="Delete Product"
         open={isModalOpenDelete}
         onCancel={() => setIsModalOpenDelete(false)}
         onOk={handleDeleteProduct}
       >
-        {isLoadingDeleted ? (
-          <Spinner />
-        ) : (
-          <div>Bạn có muốn xóa sản phầm này không?</div>
-        )}
+        <Loading isPending={isLoadingDeleted}>
+          <div>Do you want to delete this product?</div>
+        </Loading>
       </Modal>
     </div>
   );

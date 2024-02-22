@@ -1,21 +1,9 @@
-import { useRef, useState } from "react";
-
+import React, { useState, useRef } from "react";
+import { Input, Button, Space } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import { Button, Input, Space } from "antd";
 
-import Spinner from "../../../components/Spinner";
-import TableForm from "../../../components/TableForm";
-import { orderConstant } from "../../../utils/constants";
-import { convertPrice } from "../../../utils/helper";
-import useOrder from "../useOrder";
-
-function AdminOrder() {
-  const { isPending: isLoadingOrders, data: orders } = useOrder();
-
-  //   Table
-  // eslint-disable-next-line no-unused-vars
+const useColumnSearch = () => {
   const [searchText, setSearchText] = useState("");
-  // eslint-disable-next-line no-unused-vars
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
 
@@ -24,6 +12,7 @@ function AdminOrder() {
     setSearchText(selectedKeys[0]);
     setSearchedColumn(dataIndex);
   };
+
   const handleReset = (clearFilters) => {
     clearFilters();
     setSearchText("");
@@ -118,80 +107,7 @@ function AdminOrder() {
     },
   });
 
-  const columns = [
-    {
-      title: "User name",
-      dataIndex: "userName",
-      sorter: (a, b) => a.userName.length - b.userName.length,
-      ...getColumnSearchProps("userName"),
-    },
-    {
-      title: "Phone",
-      dataIndex: "phone",
-      sorter: (a, b) => a.phone.length - b.phone.length,
-      ...getColumnSearchProps("phone"),
-    },
-    {
-      title: "Address",
-      dataIndex: "address",
-      sorter: (a, b) => a.address.length - b.address.length,
-      ...getColumnSearchProps("address"),
-    },
-    {
-      title: "Paided",
-      dataIndex: "isPaid",
-      sorter: (a, b) => a.isPaid.length - b.isPaid.length,
-      ...getColumnSearchProps("isPaid"),
-    },
-    {
-      title: "Shipped",
-      dataIndex: "isDelivered",
-      sorter: (a, b) => a.isDelivered.length - b.isDelivered.length,
-      ...getColumnSearchProps("isDelivered"),
-    },
-    {
-      title: "Payment method",
-      dataIndex: "paymentMethod",
-      sorter: (a, b) => a.paymentMethod.length - b.paymentMethod.length,
-      ...getColumnSearchProps("paymentMethod"),
-    },
-    {
-      title: "Total price",
-      dataIndex: "totalPrice",
-      sorter: (a, b) => a.totalPrice.length - b.totalPrice.length,
-      ...getColumnSearchProps("totalPrice"),
-    },
-  ];
+  return getColumnSearchProps;
+};
 
-  const dataTable =
-    orders?.data?.length &&
-    orders?.data?.map((order) => {
-      return {
-        ...order,
-        key: order._id,
-        userName: order?.shippingAddress?.fullName,
-        phone: order?.shippingAddress?.phone,
-        address: order?.shippingAddress?.address,
-        paymentMethod: orderConstant.payment[order?.paymentMethod],
-        isPaid: order?.isPaid ? "TRUE" : "FALSE",
-        isDelivered: order?.isDelivered ? "TRUE" : "FALSE",
-        totalPrice: convertPrice(order?.totalPrice),
-      };
-    });
-
-  return (
-    <div>
-      {isLoadingOrders ? (
-        <Spinner />
-      ) : (
-        <TableForm
-          columns={columns}
-          dataSource={dataTable}
-          isLoading={isLoadingOrders}
-        />
-      )}
-    </div>
-  );
-}
-
-export default AdminOrder;
+export default useColumnSearch;

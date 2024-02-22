@@ -20,7 +20,7 @@ function AdminFormProduct({
       wrapperCol={{
         span: 18,
       }}
-      onFinish={onFinish}
+      // onFinish={onFinish}
       form={form}
     >
       <FormItemInput
@@ -101,7 +101,15 @@ function AdminFormProduct({
           span: 16,
         }}
       >
-        <Button type="primary" htmlType="submit" disabled={disabled}>
+        {/* <Button type="primary" htmlType="submit" disabled={disabled}>
+          Submit
+        </Button> */}
+        <Button
+          type="primary"
+          htmlType="submit"
+          onClick={() => onFinish()}
+          disabled={disabled}
+        >
           Submit
         </Button>
         <Button onClick={onCancel} disabled={disabled}>

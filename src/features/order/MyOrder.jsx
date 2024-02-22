@@ -102,17 +102,20 @@ const MyOrder = () => {
   }, [isError, isSuccess, dataCancel]);
 
   const renderProduct = (data) => {
-    return data?.map((order) => (
-      <StyledInfo key={order?._id}>
-        <Row align="middle">
-          <Col span={16}>
-            <ImagePreview src={order?.image} />
-            {order?.name}
-          </Col>
-          <Col span={8}>{convertPrice(order?.price)}</Col>
-        </Row>
-      </StyledInfo>
-    ));
+    return (
+      Array.isArray(data) &&
+      data?.map((order) => (
+        <StyledInfo key={order?._id}>
+          <Row align="middle">
+            <Col span={16}>
+              <ImagePreview src={order?.image} />
+              {order?.name}
+            </Col>
+            <Col span={8}>{convertPrice(order?.price)}</Col>
+          </Row>
+        </StyledInfo>
+      ))
+    );
   };
 
   if (isLoading || isPending) return <Spinner />;
@@ -122,44 +125,45 @@ const MyOrder = () => {
       <StyledSpan onClick={() => navigate("/")}>Trang chủ</StyledSpan>
       <Text> - Đơn hàng của tôi</Text>
 
-      {data?.map((order) => {
-        return (
-          <StyledInfo key={order?._id}>
-            <StyledInfo>
-              <Text strong>Trạng thái</Text>
-              <Col>
-                <Text type="danger">Giao hàng: </Text>
-                {`${order.isDelivered ? "Đã giao hàng" : "Chưa giao hàng"}`}
-              </Col>
-              <Col>
-                <Text type="danger">Thanh toán: </Text>
-                {`${order.isPaid ? "Đã thanh toán" : "Chưa thanh toán"}`}
-              </Col>
-            </StyledInfo>
-            {renderProduct(order?.orderItems)}
-            <StyledInfo>
-              <Row align="middle">
-                <Col span={16}>
-                  <Text strong>Tổng tiền: </Text>
-                  <Text type="danger">{convertPrice(order?.totalPrice)}</Text>
+      {Array.isArray(data) &&
+        data?.map((order) => {
+          return (
+            <StyledInfo key={order?._id}>
+              <StyledInfo>
+                <Text strong>Trạng thái</Text>
+                <Col>
+                  <Text type="danger">Giao hàng: </Text>
+                  {`${order.isDelivered ? "Đã giao hàng" : "Chưa giao hàng"}`}
                 </Col>
-                <Col span={8}>
-                  <Button
-                    type="primary"
-                    danger
-                    onClick={() => handleCancelOrder(order)}
-                  >
-                    Hủy đơn hàng
-                  </Button>
-                  <Button onClick={() => handleDetailsOrder(order?._id)}>
-                    Xem chi tiết
-                  </Button>
+                <Col>
+                  <Text type="danger">Thanh toán: </Text>
+                  {`${order.isPaid ? "Đã thanh toán" : "Chưa thanh toán"}`}
                 </Col>
-              </Row>
+              </StyledInfo>
+              {renderProduct(order?.orderItems)}
+              <StyledInfo>
+                <Row align="middle">
+                  <Col span={16}>
+                    <Text strong>Tổng tiền: </Text>
+                    <Text type="danger">{convertPrice(order?.totalPrice)}</Text>
+                  </Col>
+                  <Col span={8}>
+                    <Button
+                      type="primary"
+                      danger
+                      onClick={() => handleCancelOrder(order)}
+                    >
+                      Hủy đơn hàng
+                    </Button>
+                    <Button onClick={() => handleDetailsOrder(order?._id)}>
+                      Xem chi tiết
+                    </Button>
+                  </Col>
+                </Row>
+              </StyledInfo>
             </StyledInfo>
-          </StyledInfo>
-        );
-      })}
+          );
+        })}
     </StyledOrderProduct>
   );
 };

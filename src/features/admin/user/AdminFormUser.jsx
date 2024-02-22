@@ -19,7 +19,6 @@ function AdminFormUser({
       wrapperCol={{
         span: 18,
       }}
-      onFinish={onFinish}
       form={form}
     >
       <FormItemInput
@@ -67,7 +66,12 @@ function AdminFormUser({
           span: 16,
         }}
       >
-        <Button type="primary" htmlType="submit" disabled={disabled}>
+        <Button
+          type="primary"
+          htmlType="submit"
+          onClick={onFinish}
+          disabled={disabled}
+        >
           Submit
         </Button>
         <Button onClick={onCancel} disabled={disabled}>

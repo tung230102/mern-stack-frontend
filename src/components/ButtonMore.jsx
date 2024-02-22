@@ -27,7 +27,7 @@ function ButtonMore({ onClick, isPending }) {
     >
       <Loading isPending={isPending}>
         <StyledButton onClick={onClick} disabled={isPending}>
-          {isPending ? "Đang tải..." : "Xem thêm"}
+          {isPending ? "Loading..." : "See more"}
         </StyledButton>
       </Loading>
     </div>

@@ -84,13 +84,16 @@ function Profile() {
 
   async function handleUpload({ fileList }) {
     const file = fileList[0];
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
+    if (file) {
+      if (!file.url && !file.preview) {
+        file.preview = await getBase64(file.originFileObj);
+      }
+      setAvatar(file.preview);
     }
-    setAvatar(file.preview);
   }
 
-  function handleFinish() {
+  function handleFinish(e) {
+    e.preventDefault();
     mutate({
       id: user?.id,
       name,
@@ -107,7 +110,7 @@ function Profile() {
     <StyledProfile>
       <Form onFinish={handleFinish} layout="horizontal" labelCol={{ span: 4 }}>
         <Title level={4} style={{ textAlign: "center" }}>
-          Thông tin người dùng
+          User Info
         </Title>
 
         <FormItemInput
@@ -152,7 +155,7 @@ function Profile() {
               maxCount={1}
             >
               <ButtonFullWidth height="60px" ghost icon={<UploadOutlined />}>
-                Chọn ảnh
+                Select photo
               </ButtonFullWidth>
             </StyledUpload>
             {avatar && <ImagePreview size={60} border="none" src={avatar} />}

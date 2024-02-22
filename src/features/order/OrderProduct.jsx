@@ -265,7 +265,7 @@ const OrderProduct = () => {
           {order?.orderItems?.map((order) => {
             return (
               <StyledInfo className="margin-right" key={order.name}>
-                <Row>
+                <Row align="middle">
                   <Col span={11}>
                     <Checkbox
                       onChange={handleCheck}
@@ -317,8 +317,10 @@ const OrderProduct = () => {
         <Col span={6}>
           <StyledInfo>
             <Text strong>Địa chỉ: </Text>
-            <Text underline>{`${user?.address}, ${user?.city} `}</Text>
-            <StyledSpan onClick={handleChangeAddress}>Thay đổi</StyledSpan>
+            {user?.address && user?.city ? (
+              <Text underline>{`${user?.address}, ${user?.city}`}</Text>
+            ) : null}
+            <StyledSpan onClick={handleChangeAddress}> Thay đổi</StyledSpan>
           </StyledInfo>
           <StyledInfo>
             <Row>

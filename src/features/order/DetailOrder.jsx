@@ -55,7 +55,7 @@ function DetailOrder() {
   const { isPending, data } = useQuery({
     queryKey: ["orders-details"],
     queryFn: fetchDetailsOrder,
-    enabled: id,
+    enabled: !!id,
   });
 
   const priceMemo = useMemo(() => {

@@ -98,26 +98,24 @@ function Header() {
           })
         }
       >
-        Đơn hàng của tôi
+        My Order
       </StyledCursorPopover>
       <StyledCursorPopover onClick={() => navigate("/profile-user")}>
-        Thông tin người dùng
+        User Info
       </StyledCursorPopover>
       {user?.isAdmin && (
         <StyledCursorPopover onClick={() => navigate("/system/admin")}>
-          Quản lý hệ thống
+          System
         </StyledCursorPopover>
       )}
-      <StyledCursorPopover onClick={handleLogout}>
-        Đăng xuất
-      </StyledCursorPopover>
+      <StyledCursorPopover onClick={handleLogout}>Log Out</StyledCursorPopover>
     </>
   );
 
   return (
     <StyledRow>
       <Col span={6}>
-        <StyleLink to="/">Mern Stack</StyleLink>
+        <StyleLink to="/">MobileMart</StyleLink>
       </Col>
 
       <Col span={12}>
@@ -151,11 +149,11 @@ function Header() {
             ) : (
               <>
                 <StyledText onClick={() => navigate("/sign-in")}>
-                  Đăng nhập /
+                  Login /
                 </StyledText>
 
                 <StyledText onClick={() => navigate("/sign-up")}>
-                  Đăng ký
+                  Sign Up
                 </StyledText>
               </>
             )}
@@ -168,7 +166,7 @@ function Header() {
                 <ShoppingCartOutlined />
               </StyledIcon>
             </Badge>
-            <StyledText>Giỏ hàng</StyledText>
+            <StyledText>Cart</StyledText>
           </StyledHeaderItem>
         )}
       </StyledCol>

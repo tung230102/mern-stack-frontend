@@ -40,7 +40,7 @@ function SignIn() {
       } else {
         navigate("/");
       }
-      Message.success("Đăng nhập thành công");
+      Message.success("Log In Successfully");
       localStorage.setItem("access_token", JSON.stringify(data?.access_token));
       localStorage.setItem(
         "refresh_token",
@@ -53,7 +53,7 @@ function SignIn() {
         }
       }
     } else if (isSuccess && data?.status === "ERR") {
-      Message.error("Đăng nhập không thành công");
+      Message.error("Login failed");
     }
   }, [isSuccess, navigate, data, handleGetDetailsUser, location]);
 
@@ -68,11 +68,11 @@ function SignIn() {
     <UserFormLogin
       onFinish={handleFinish}
       isPending={isPending}
-      text="Đăng nhập"
+      text="Log In"
       data={data}
       onNavigate="/sign-up"
-      spanLink="Chưa có tài khoản?"
-      textLink=" Đăng ký"
+      spanLink="No account?"
+      textLink="  Register"
     >
       <FormItemInput
         name="email"
@@ -80,7 +80,7 @@ function SignIn() {
         prefix={<UserOutlined />}
         onChange={(e) => setEmail(e.target.value)}
         disabled={isPending}
-        placeholder="Nhập email của bạn"
+        placeholder="Enter email"
       />
       <FormItemInput
         name="password"
@@ -89,7 +89,7 @@ function SignIn() {
         prefix={<LockOutlined />}
         onChange={(e) => setPassword(e.target.value)}
         disabled={isPending}
-        placeholder="Nhập mật khẩu của bạn"
+        placeholder="Enter password"
       />
       <p>admin@gmail.com</p>
       <p>admin</p>

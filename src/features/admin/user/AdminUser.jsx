@@ -1,13 +1,7 @@
+import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useCallback, useEffect, useRef, useState } from "react";
 
-import { Button, Form, Input, Modal, Space } from "antd";
-import {
-  DeleteOutlined,
-  EditOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
-import { useQuery } from "@tanstack/react-query";
+import { Form, Modal } from "antd";
 import Title from "antd/es/typography/Title";
 
 import DrawerForm from "../../../components/DrawerForm";
@@ -17,7 +11,9 @@ import TableForm from "../../../components/TableForm";
 import { useMutationHook } from "../../../hooks/useMutationHook";
 import * as UserService from "../../../services/UserService";
 import { getBase64 } from "../../../utils/helper";
+import useUser from "../useUser";
 import AdminFormUser from "./AdminFormUser";
+import useColumnTableUser from "./useColumnTableUser";
 
 const initialValue = () => ({
   name: "",
@@ -40,189 +36,24 @@ function AdminUser() {
   const [stateUserDetails, setStateUserDetails] = useState(initialValue());
 
   //  Add user
-  async function getAllUsers() {
-    const res = await UserService.getAllUser();
-    return res;
-  }
-
-  const queryUser = useQuery({
-    queryKey: ["users"],
-    queryFn: getAllUsers,
-  });
+  const queryUser = useUser();
 
   const { isLoading, data: users } = queryUser;
 
   // End add user
 
   // Table
-  // eslint-disable-next-line no-unused-vars
-  const [searchText, setSearchText] = useState("");
-  // eslint-disable-next-line no-unused-vars
-  const [searchedColumn, setSearchedColumn] = useState("");
-  const searchInput = useRef(null);
-
-  const handleSearch = (selectedKeys, confirm, dataIndex) => {
-    confirm();
-    setSearchText(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
-  };
-  const handleReset = (clearFilters) => {
-    clearFilters();
-    setSearchText("");
-  };
-  const getColumnSearchProps = (dataIndex) => ({
-    filterDropdown: ({
-      setSelectedKeys,
-      selectedKeys,
-      confirm,
-      clearFilters,
-      close,
-    }) => (
-      <div
-        style={{
-          padding: 8,
-        }}
-        onKeyDown={(e) => e.stopPropagation()}
-      >
-        <Input
-          ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
-          value={selectedKeys[0]}
-          onChange={(e) =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
-          }
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{
-            marginBottom: 8,
-            display: "block",
-          }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{
-              width: 90,
-            }}
-          >
-            Search
-          </Button>
-          <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
-            size="small"
-            style={{
-              width: 90,
-            }}
-          >
-            Reset
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              confirm({
-                closeDropdown: false,
-              });
-              setSearchText(selectedKeys[0]);
-              setSearchedColumn(dataIndex);
-            }}
-          >
-            Filter
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close();
-            }}
-          >
-            close
-          </Button>
-        </Space>
-      </div>
-    ),
-    filterIcon: (filtered) => (
-      <SearchOutlined
-        style={{
-          color: filtered ? "#1677ff" : undefined,
-        }}
-      />
-    ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-    onFilterDropdownOpenChange: (visible) => {
-      if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
-      }
-    },
+  function handleOpenModal() {
+    setIsModalOpenDelete(true);
+  }
+  function handleOpenDrawer() {
+    setIsOpenDrawer(true);
+  }
+  const { columns, dataTable } = useColumnTableUser({
+    users,
+    handleOpenModal,
+    handleOpenDrawer,
   });
-
-  const dataTable = users?.data?.map((user) => ({
-    ...user,
-    key: user._id,
-    isAdmin: user.isAdmin ? "True" : "False",
-  }));
-
-  const columns = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      sorter: (a, b) => a.name.length - b.name.length,
-      ...getColumnSearchProps("name"),
-    },
-    {
-      title: "Email",
-      dataIndex: "email",
-      sorter: (a, b) => a.email.length - b.email.length,
-      ...getColumnSearchProps("email"),
-    },
-
-    {
-      title: "Address",
-      dataIndex: "address",
-      sorter: (a, b) => a.address.length - b.address.length,
-      ...getColumnSearchProps("address"),
-    },
-    {
-      title: "Admin",
-      dataIndex: "isAdmin",
-      filters: [
-        {
-          text: "True",
-          value: true,
-        },
-        {
-          text: "False",
-          value: false,
-        },
-      ],
-    },
-    {
-      title: "Phone",
-      dataIndex: "phone",
-      sorter: (a, b) => a.phone - b.phone,
-      ...getColumnSearchProps("phone"),
-    },
-    {
-      title: "Action",
-      dataIndex: "action",
-      width: "120px",
-      render: () => (
-        <Space>
-          <DeleteOutlined
-            style={{ color: "red", fontSize: 24, cursor: "pointer" }}
-            onClick={() => setIsModalOpenDelete(true)}
-          />
-          <EditOutlined
-            style={{ color: "orange", fontSize: 24, cursor: "pointer" }}
-            onClick={() => setIsOpenDrawer(true)}
-          />
-        </Space>
-      ),
-    },
-  ];
   // End Table
 
   // Details
@@ -286,7 +117,7 @@ function AdminUser() {
     isSuccess: isSuccessUpdated,
   } = mutationUpdate;
 
-  function onUpdateUser() {
+  function handleUpdateUser() {
     mutationUpdate.mutate(
       {
         id: rowSelected,
@@ -310,7 +141,7 @@ function AdminUser() {
   useEffect(() => {
     if (isSuccessUpdated && dataUpdated?.status === "OK") {
       Message.success();
-      // handleCancelDrawer();
+      handleCancelDrawer();
     } else if (isSuccessUpdated && dataUpdated?.status === "ERR") {
       Message.error();
     }
@@ -412,7 +243,7 @@ function AdminUser() {
         onClose={() => setIsOpenDrawer(false)}
       >
         <AdminFormUser
-          onFinish={onUpdateUser}
+          onFinish={handleUpdateUser}
           form={form}
           state={stateUserDetails}
           onChange={handleChangeDetails}
@@ -424,7 +255,7 @@ function AdminUser() {
 
       <Modal
         forceRender
-        title="Xóa người dùng"
+        title="Delete User"
         open={isModalOpenDelete}
         onCancel={() => setIsModalOpenDelete(false)}
         onOk={handleDeleteUser}
@@ -432,7 +263,7 @@ function AdminUser() {
         {isLoadingDeleted ? (
           <Spinner />
         ) : (
-          <div>Bạn có muốn xóa người dung này không?</div>
+          <div>Do you want to delete this user?</div>
         )}
       </Modal>
     </div>

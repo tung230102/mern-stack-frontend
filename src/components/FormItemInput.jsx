@@ -36,7 +36,7 @@ export function FormItemInput({
       rules={[
         {
           required: true,
-          message: `Vui lòng nhập ${name} của bạn!`,
+          message: `Please input your ${name}!`,
         },
       ]}
     >

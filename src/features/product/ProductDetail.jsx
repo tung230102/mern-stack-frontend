@@ -159,8 +159,8 @@ function ProductDetail() {
 
   return (
     <StyledProductDetail>
-      <StyledSpan onClick={() => navigate("/")}>Trang chủ</StyledSpan>
-      <span> - Chi tiết sản phẩm</span>
+      <StyledSpan onClick={() => navigate("/")}>Home</StyledSpan>
+      <span> - Product details</span>
       <StyledRow>
         <Col span={10}>
           <Image src={productDetails.image} alt="product" preview={false} />
@@ -219,18 +219,20 @@ function ProductDetail() {
               defaultValue={productDetails?.rating}
               value={productDetails?.rating}
             />
-            <Text> | Đã bán {productDetails?.sold || 1000}+</Text>
+            <Text> | Sold {productDetails?.sold || 1000}+</Text>
           </div>
 
           <Title level={2}>{convertPrice(productDetails?.price)}</Title>
 
-          <Text>Giao đến: </Text>
-          <Text underline>
-            {user?.address}, {user?.city}
-          </Text>
+          <Text>Delivered: </Text>
+          {user.address && user.city ? (
+            <Text underline>
+              {user?.address}, {user?.city}
+            </Text>
+          ) : null}
           <StyledSpan onClick={() => navigate("/profile-user")}>
             {" "}
-            Đổi địa chỉ
+            Change address
           </StyledSpan>
 
           <ButtonLike
@@ -241,7 +243,7 @@ function ProductDetail() {
             }
           />
           <StyledQuantity>
-            <Text>Số lượng </Text>
+            <Text>Quantity: </Text>
             <FormNumber
               onClickDecrease={() =>
                 handleChangeCount("decrease", numProduct === 1)
@@ -260,11 +262,11 @@ function ProductDetail() {
           <div>
             <ButtonDefault
               onClick={handleAddOrderProduct}
-              text="Chọn mua"
+              text="Add to Cart"
               width={200}
             />
             {errorLimitOrder && (
-              <Text type="danger"> Sản phẩm đã hết hàng</Text>
+              <Text type="danger"> The product is out of stock</Text>
             )}
           </div>
         </Col>

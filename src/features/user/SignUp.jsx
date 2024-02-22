@@ -19,10 +19,10 @@ function SignUp() {
 
   useEffect(() => {
     if (isSuccess && data?.status === "OK") {
-      Message.success("Đăng ký tài khoản thành công");
+      Message.success("Account registration successful");
       navigate("/sign-in");
     } else if (isSuccess && data?.status === "ERR") {
-      Message.error("Đăng ký tài khoản không thành công");
+      Message.error("Account registration failed");
     }
   }, [isSuccess, navigate, data]);
 
@@ -38,11 +38,11 @@ function SignUp() {
     <UserFormLogin
       onFinish={onFinish}
       isPending={isPending}
-      text="Đăng ký"
+      text="Sign Up"
       data={data}
       onNavigate="/sign-in"
-      spanLink="Đã có tài khoản?"
-      textLink=" Đăng nhập"
+      spanLink="Have an account?"
+      textLink=" Log In"
     >
       <FormItemInput
         name="email"
@@ -50,7 +50,7 @@ function SignUp() {
         prefix={<UserOutlined />}
         onChange={(e) => setEmail(e.target.value)}
         disabled={isPending}
-        placeholder="Nhập email của bạn"
+        placeholder="Enter email"
       />
       <FormItemInput
         name="password"
@@ -59,16 +59,16 @@ function SignUp() {
         prefix={<LockOutlined />}
         onChange={(e) => setPassword(e.target.value)}
         disabled={isPending}
-        placeholder="Nhập mật khẩu của bạn"
+        placeholder="Enter password"
       />
       <FormItemInput
-        name="lại password"
-        value="lại password"
+        name=" confirm password"
+        value="confirm password"
         type="password"
         prefix={<LockOutlined />}
         onChange={(e) => setConfirmPassword(e.target.value)}
         disabled={isPending}
-        placeholder="Nhập lại mật khẩu của bạn"
+        placeholder=" Enter password"
       />
     </UserFormLogin>
   );
