@@ -16,7 +16,7 @@ function Stats({
   users,
   isLoadingUsers,
 }) {
-  const sales = orders?.data.reduce((acc, cur) => acc + cur.totalPrice, 0);
+  const sales = orders?.data?.reduce((acc, cur) => acc + cur.totalPrice, 0);
 
   return (
     <Row gutter={16}>

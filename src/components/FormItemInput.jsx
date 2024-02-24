@@ -1,7 +1,6 @@
 import { UploadOutlined } from "@ant-design/icons";
-import { Form, Input, Select, Upload } from "antd";
+import { Button, Form, Input, Select, Upload } from "antd";
 import styled from "styled-components";
-import ButtonFullWidth from "./ButtonFullWidth";
 import ImagePreview from "./ImagePreview";
 
 const StyledUploadForm = styled.div`
@@ -13,6 +12,10 @@ const StyledUploadForm = styled.div`
 const StyledUpload = styled(Upload)`
   & .ant-upload-list-item-actions {
     display: none;
+  }
+
+  & button {
+    height: 60px;
   }
 `;
 
@@ -57,11 +60,9 @@ export function FormItemInput({
             onChange={onUpload}
             maxCount={1}
           >
-            <ButtonFullWidth ghost icon={<UploadOutlined />}>
-              Chọn ảnh
-            </ButtonFullWidth>
+            <Button icon={<UploadOutlined />}>Select photo</Button>
           </StyledUpload>
-          {image && <ImagePreview src={image} />}
+          {image && <ImagePreview src={image} size={60} border="none" />}
         </StyledUploadForm>
       )}
       {type === "input" && (

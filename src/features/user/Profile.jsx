@@ -1,6 +1,6 @@
 import { UploadOutlined } from "@ant-design/icons";
 import { useMutation } from "@tanstack/react-query";
-import { Form, Upload } from "antd";
+import { Button, Form, Upload } from "antd";
 import Title from "antd/es/typography/Title";
 
 import { useCallback, useEffect, useState } from "react";
@@ -25,18 +25,6 @@ const StyledProfile = styled.div`
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.8);
 `;
 
-const StyledUploadForm = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 20px;
-`;
-
-const StyledUpload = styled(Upload)`
-  & .ant-upload-list-item-actions.picture {
-    display: none;
-  }
-`;
-
 function Profile() {
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
@@ -56,13 +44,18 @@ function Profile() {
 
   const { data, isPending, isSuccess, mutate } = mutation;
 
-  const handleGetDetailsUser = useCallback(
-    async (id, token) => {
-      const res = await UserService.getDetailsUser(id, token);
-      dispatch(updateUser({ ...res?.data, access_token: token }));
-    },
-    [dispatch]
-  );
+  // const handleGetDetailsUser = useCallback(
+  //   async (id, token) => {
+  //     const res = await UserService.getDetailsUser(id, token);
+  //     dispatch(updateUser({ ...res?.data, access_token: token }));
+  //   },
+  //   [dispatch]
+  // );
+
+  const handleGetDetailsUser = async (id, token) => {
+    const res = await UserService.getDetailsUser(id, token);
+    dispatch(updateUser({ ...res?.data, access_token: token }));
+  };
 
   useEffect(() => {
     setName(user?.name);
@@ -80,7 +73,7 @@ function Profile() {
     } else if (isSuccess && data?.status === "ERR") {
       Message.error();
     }
-  }, [isSuccess, handleGetDetailsUser, user, data]);
+  }, [isSuccess]);
 
   async function handleUpload({ fileList }) {
     const file = fileList[0];
@@ -92,8 +85,7 @@ function Profile() {
     }
   }
 
-  function handleFinish(e) {
-    e.preventDefault();
+  function handleFinish() {
     mutate({
       id: user?.id,
       name,
@@ -147,20 +139,13 @@ function Profile() {
           onChange={(e) => setCity(e.target.value)}
         />
 
-        <Form.Item label="Avatar">
-          <StyledUploadForm>
-            <StyledUpload
-              action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
-              onChange={handleUpload}
-              maxCount={1}
-            >
-              <ButtonFullWidth height="60px" ghost icon={<UploadOutlined />}>
-                Select photo
-              </ButtonFullWidth>
-            </StyledUpload>
-            {avatar && <ImagePreview size={60} border="none" src={avatar} />}
-          </StyledUploadForm>
-        </Form.Item>
+        <FormItemInput
+          label="Avatar"
+          onUpload={handleUpload}
+          disabled={isPending}
+          type="upload"
+          image={avatar}
+        />
 
         <Form.Item>
           <Loading isPending={isPending}>

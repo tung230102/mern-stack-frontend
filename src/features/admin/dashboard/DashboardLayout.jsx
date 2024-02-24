@@ -1,27 +1,17 @@
-import styled from "styled-components";
 import useOrder from "../useOrder";
 import useProduct from "../useProduct";
 import useUser from "../useUser";
 
+import { Col, Row } from "antd";
 import PieChartOrder from "../order/PieChartOrder";
 import SalesChart from "./SalesChart";
 import Stats from "./Stats";
 import TodayActivity from "./TodayActivity";
-import { Col, Row } from "antd";
-
-const StyledDashboardLayout = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-template-rows: auto 34rem auto;
-  gap: 2.4rem;
-`;
 
 function DashboardLayout() {
   const { data: orders, isLoading: isLoadingOrder } = useOrder();
   const { data: products, isLoading: isLoadingProduct } = useProduct();
   const { data: users, isLoading: isLoadingUsers } = useUser();
-  // const { data: productType, isLoading: isLoadingProductType } =
-  //   useProductType();
 
   const numDays = 7;
 
@@ -38,16 +28,18 @@ function DashboardLayout() {
         />
       </Col>
       <Col span={12}>
-        <TodayActivity orders={orders} />
+        <TodayActivity orders={orders} isLoadingOrder={isLoadingOrder} />
       </Col>
-
       <Col span={12}>
-        <PieChartOrder data={orders?.data} />
+        <PieChartOrder orders={orders} isLoadingOrder={isLoadingOrder} />
       </Col>
       <Col span={24}>
-        <SalesChart orders={orders} numDays={numDays} />
+        <SalesChart
+          orders={orders}
+          numDays={numDays}
+          isLoadingOrder={isLoadingOrder}
+        />
       </Col>
-      <StyledDashboardLayout></StyledDashboardLayout>
     </Row>
   );
 }

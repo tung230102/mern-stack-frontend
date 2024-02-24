@@ -53,7 +53,6 @@ function AdminFormUser({
 
       <FormItemInput
         label="Avatar"
-        name="avatar"
         onUpload={onUpLoad}
         disabled={disabled}
         type="upload"

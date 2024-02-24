@@ -11,8 +11,8 @@ import { convertDataChart } from "../../../utils/helper";
 
 const { Title } = Typography;
 
-function PieChartOrder(props) {
-  const data = convertDataChart(props?.data, "paymentMethod");
+function PieChartOrder({ orders, isLoadingOrder }) {
+  const data = convertDataChart(orders?.data, "paymentMethod");
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
   const RADIAN = Math.PI / 180;
@@ -44,7 +44,7 @@ function PieChartOrder(props) {
   };
 
   return (
-    <Card>
+    <Card loading={isLoadingOrder}>
       <Title level={4}>Payment method</Title>
       <ResponsiveContainer width="100%" height={240}>
         <PieChart width={400} height={400}>

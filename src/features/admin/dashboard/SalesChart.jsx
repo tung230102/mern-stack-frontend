@@ -19,7 +19,7 @@ const colors = {
   background: "#fff",
 };
 
-function SalesChart({ orders, numDays }) {
+function SalesChart({ orders, numDays, isLoadingOrder }) {
   const allDates = eachDayOfInterval({
     start: subDays(new Date(), numDays - 1),
     end: new Date(),
@@ -29,13 +29,13 @@ function SalesChart({ orders, numDays }) {
     return {
       label: format(date, "MMM dd"),
       totalSales: orders?.data
-        .filter((order) => isSameDay(date, new Date(order.createdAt)))
-        .reduce((acc, cur) => acc + cur.totalPrice, 0),
+        ?.filter((order) => isSameDay(date, new Date(order.createdAt)))
+        ?.reduce((acc, cur) => acc + cur.totalPrice, 0),
     };
   });
 
   return (
-    <Card>
+    <Card loading={isLoadingOrder}>
       <Title level={4}>Sales from</Title>
 
       <ResponsiveContainer height={300} width="100%">

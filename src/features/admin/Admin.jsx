@@ -24,6 +24,7 @@ const { Header, Content, Sider } = Layout;
 const StyledLogo = styled.div`
   text-align: center;
   margin-top: 8px;
+  cursor: pointer;
 `;
 
 const Img = styled.img`

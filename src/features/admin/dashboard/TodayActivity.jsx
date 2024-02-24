@@ -10,11 +10,9 @@ import {
 
 const { Title } = Typography;
 
-function TodayActivity({ orders }) {
+function TodayActivity({ orders, isLoadingOrder }) {
   // Process data to calculate total sales revenue by month
-  if (!orders) return null;
-
-  const revenueByMonth = orders?.data.reduce((acc, order) => {
+  const revenueByMonth = orders?.data?.reduce((acc, order) => {
     const createdAt = new Date(order.createdAt);
     const month = createdAt.getMonth(); // Extract month (0-indexed)
     const revenue = order.totalPrice;
@@ -23,12 +21,13 @@ function TodayActivity({ orders }) {
   }, {});
 
   // Convert revenueByMonth object into an array of objects for PieChart data
-  const pieChartData = Object.entries(revenueByMonth).map(
-    ([month, revenue]) => ({
+  let pieChartData = [];
+  if (revenueByMonth !== undefined) {
+    pieChartData = Object.entries(revenueByMonth).map(([month, revenue]) => ({
       name: `Month ${parseInt(month) + 1}`, // Convert month index to month number (1-indexed)
       value: revenue,
-    })
-  );
+    }));
+  }
 
   // Define colors for the PieChart segments
   const COLORS = [
@@ -41,7 +40,7 @@ function TodayActivity({ orders }) {
   ];
 
   return (
-    <Card>
+    <Card loading={isLoadingOrder}>
       <Row>
         <Title level={4}>Sales Revenue Per Month</Title>
       </Row>
